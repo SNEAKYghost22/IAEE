@@ -132,130 +132,127 @@
 
         /* Interactive Tabs */
         .tabs {
-        display: flex;
-        margin-bottom: 2rem;
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 0.5rem;
-        gap: 0.5rem;
+            display: flex;
+            margin-bottom: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 0.5rem;
+            gap: 0.5rem;
         }
 
         .tab {
-        flex: 1;
-        padding: 1rem 2rem;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 8px;
-        text-align: center;
-        font-weight: 500;
-        position: relative;
-        overflow: hidden;
+            flex: 1;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
         }
 
         .tab::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-        transition: left 0.5s;
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
         }
 
-.tab:hover::before {
-    left: 100%;
-}
+        .tab:hover::before {
+            left: 100%;
+        }
 
-.tab.active {
-    background: var(--primary-color);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
-}
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
 
-.form-group {
-    margin-bottom: 1.5rem;
-    position: relative;
-}
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
 
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #333;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
 
-input, select {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-    background: white;
-}
+        input, select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            background: white;
+        }
 
-input:focus, select:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-    transform: translateY(-1px);
-}
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            transform: translateY(-1px);
+        }
 
-button {
-    width: 100%;
-    padding: 1.2rem;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
+        /* Interactive Button */
+        button {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
 
-button::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
 
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-}
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
 
-button:hover::before {
-    width: 300px;
-    height: 300px;
-}
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
 
-button:active {
-    transform: translateY(-1px);
-}
+        button:active {
+            transform: translateY(-1px);
+        }
 
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-
-button #createBtnText {
-    text-align: center;
-}
-
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
 
         /* Loading Animation */
         .loading {
@@ -477,42 +474,31 @@ button #createBtnText {
                     </div>
                 </div>
 
-                <div id="createForm">
-                 <div class="tabs">
-         <div class="tab active" onclick="switchTab('create')">
-                <i class="fas fa-credit-card"></i> Buat Transaksi
-                     </div>
-        <div class="tab" onclick="switchTab('history')">
-            <i class="fas fa-history"></i> Riwayat Transaksi
-        </div>
-    </div>
-
-    <div id="createFormContent">
-        <div class="form-group">
-            <label for="userId"><i class="fas fa-user"></i> User ID</label>
-            <input type="number" id="userId" placeholder="Masukkan User ID">
-        </div>
-        <div class="form-group">
-            <label for="amount"><i class="fas fa-money-bill-wave"></i> Jumlah</label>
-            <input type="number" id="amount" placeholder="Masukkan jumlah pembayaran" oninput="formatCurrency(this)">
-        </div>
-        <div class="form-group">
-            <label for="type"><i class="fas fa-exchange-alt"></i> Tipe Transaksi</label>
-            <select id="type">
-                <option value="withdrawal">Penarikan</option>
-                <option value="deposit">Deposit</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="token"><i class="fas fa-key"></i> Token Auth</label>
-            <input type="password" id="token" placeholder="Masukkan token autentikasi">
-        </div>
-        <button onclick="createTransaction()" id="createBtn">
-            <span id="createBtnText">Proses Pembayaran</span>
-        </button>
+                <div id="createFormContent">
+                    <div class="form-group">
+                        <label for="userId"><i class="fas fa-user"></i> User ID</label>
+                        <input type="number" id="userId" placeholder="Masukkan User ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="amount"><i class="fas fa-money-bill-wave"></i> Jumlah</label>
+                        <input type="number" id="amount" placeholder="Masukkan jumlah pembayaran" oninput="formatCurrency(this)">
+                    </div>
+                    <div class="form-group">
+                        <label for="type"><i class="fas fa-exchange-alt"></i> Tipe Transaksi</label>
+                        <select id="type">
+                            <option value="withdrawal">Penarikan</option>
+                            <option value="deposit">Deposit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="token"><i class="fas fa-key"></i> Token Auth</label>
+                        <input type="password" id="token" placeholder="Masukkan token autentikasi">
+                    </div>
+                    <button onclick="createTransaction()" id="createBtn">
+                        <span id="createBtnText">Proses Transaksi</span>
+                    </button>
+                </div>
             </div>
-        </div>
-
 
             <div id="historyForm" style="display: none;">
                 <div class="feature-card">
@@ -525,6 +511,10 @@ button #createBtnText {
                     <label for="userIdHistory"><i class="fas fa-user"></i> User ID</label>
                     <input type="number" id="userIdHistory" placeholder="Masukkan User ID untuk melihat riwayat">
                 </div>
+                <div class="form-group">
+                    <label for="tokenHistory"><i class="fas fa-key"></i> Token Auth</label>
+                    <input type="password" id="tokenHistory" placeholder="Masukkan token autentikasi">
+                </div>
                 <button onclick="getPaymentHistory()" id="historyBtn">
                     <span id="historyBtnText">Lihat Riwayat</span>
                 </button>
@@ -535,7 +525,222 @@ button #createBtnText {
     </div>
 
     <script>
-        // JavaScript logic for handling form actions goes here
+        function switchTab(tab) {
+            if (tab === 'history') {
+                document.getElementById('historyForm').style.display = 'block';
+                document.getElementById('createForm').style.display = 'none';
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab')[1].classList.add('active');
+            } else if (tab === 'create') {
+                document.getElementById('historyForm').style.display = 'none';
+                document.getElementById('createForm').style.display = 'block';
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab')[0].classList.add('active');
+            }
+        }
+
+        function showMessage(message, isError = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <div class="message ${isError ? 'error' : 'success'}">
+                    <h3>${isError ? '❌' : '✅'} ${isError ? 'Error' : 'Sukses'}</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : 'success'}`;
+            toast.innerHTML = `<strong>${isError ? 'Error!' : 'Sukses!'}</strong><br>${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        function formatCurrency(input) {
+            let value = input.value.replace(/[^\d]/g, '');
+            if (value) {
+                input.value = parseInt(value).toLocaleString('id-ID');
+            }
+        }
+
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            const textSpan = document.getElementById(buttonId + 'Text');
+            
+            if (isLoading) {
+                button.disabled = true;
+                textSpan.innerHTML = '<span class="loading"></span> Processing...';
+            } else {
+                button.disabled = false;
+                textSpan.innerHTML = buttonId === 'createBtn' ? 'Proses Transaksi' : 'Lihat Riwayat';
+            }
+        }
+
+        async function createTransaction() {
+            const userId = document.getElementById('userId').value;
+            const amount = document.getElementById('amount').value.replace(/[^\d]/g, '');
+            const type = document.getElementById('type').value;
+            const token = document.getElementById('token').value;
+        
+            if (!userId || !amount || !token) {
+                showMessage('Semua field harus diisi', true);
+                showToast('Mohon lengkapi semua field', true);
+                return;
+            }
+        
+            setButtonLoading('createBtn', true);
+        
+            try {
+                const response = await fetch('http://localhost:5003/transactions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token.trim()}`
+                    },
+                    body: JSON.stringify({
+                        user_id: parseInt(userId),
+                        amount: parseInt(amount),
+                        type: type
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Transaksi berhasil (status 200-299)
+                    showMessage(`Transaksi berhasil! ID Transaksi: ${data.transaction_id}. Saldo baru: Rp ${parseInt(data.new_balance).toLocaleString('id-ID')}`);
+                    showToast(`Transaksi Rp ${parseInt(amount).toLocaleString('id-ID')} berhasil!`);
+
+                    // Clear form
+                    document.getElementById('userId').value = '';
+                    document.getElementById('amount').value = '';
+                    document.getElementById('token').value = '';
+                } else {
+                    // Transaksi gagal (status 400, 401, 500, dll)
+                    if (response.status === 400 && data.message === 'Insufficient balance') {
+                        showMessage('Saldo tidak mencukupi untuk melakukan transaksi ini', true);
+                        showToast('Saldo tidak mencukupi', true);
+                    } else if (response.status === 401) {
+                        showMessage('Token autentikasi tidak valid atau kadaluarsa', true);
+                        showToast('Error autentikasi', true);
+                    } else {
+                        showMessage(data.message || 'Terjadi kesalahan saat memproses transaksi', true);
+                        showToast('Gagal memproses transaksi', true);
+                    }
+                }
+            } catch (error) {
+                // Error jaringan atau parsing JSON
+                console.error('Error:', error);
+                showMessage('Gagal terhubung ke server atau format response tidak valid', true);
+                showToast('Gagal terhubung ke server', true);
+            } finally {
+                setButtonLoading('createBtn', false);
+            }
+        }
+
+        async function getPaymentHistory() {
+            const userId = document.getElementById('userIdHistory').value;
+            const token = document.getElementById('tokenHistory').value;
+            
+            if (!userId) {
+                showMessage('User ID harus diisi', true);
+                showToast('Mohon masukkan User ID', true);
+                return;
+            }
+            
+            if (!token) {
+                showMessage('Token autentikasi harus diisi', true);
+                showToast('Mohon masukkan token', true);
+                return;
+            }
+            
+            setButtonLoading('historyBtn', true);
+            
+            try {
+                const response = await fetch(`http://localhost:5003/transactions/user/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token.trim()}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const transactions = await response.json();
+                    
+                    if (transactions.length === 0) {
+                        showMessage('Tidak ada riwayat transaksi untuk user ini');
+                        return;
+                    }
+                    
+                    let tableHTML = `
+                        <table class="payment-table">
+                            <thead>
+                                <tr>
+                                    <th>ID Transaksi</th>
+                                    <th>Jumlah</th>
+                                    <th>Tipe</th>
+                                    <th>Waktu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    transactions.forEach(transaction => {
+                        tableHTML += `
+                            <tr>
+                                <td>${transaction.id}</td>
+                                <td>Rp ${parseInt(transaction.amount).toLocaleString('id-ID')}</td>
+                                <td>${transaction.type === 'withdrawal' ? 'Penarikan' : 'Deposit'}</td>
+                                <td>${new Date(transaction.timestamp).toLocaleString('id-ID')}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableHTML += `
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    document.getElementById('result').innerHTML = tableHTML;
+                    showToast('Riwayat transaksi berhasil dimuat');
+                } else {
+                    const data = await response.json();
+                    if (response.status === 401) {
+                        showMessage('Token autentikasi tidak valid atau kadaluarsa', true);
+                        showToast('Error autentikasi', true);
+                    } else {
+                        showMessage(data.message || 'Gagal mengambil riwayat transaksi', true);
+                        showToast('Gagal mengambil riwayat', true);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Gagal terhubung ke server', true);
+                showToast('Gagal terhubung ke server', true);
+            } finally {
+                setButtonLoading('historyBtn', false);
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            // Add smooth scrolling and other interactive effects
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+        };
     </script>
 </body>
 </html>

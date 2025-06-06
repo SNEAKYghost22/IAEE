@@ -37,7 +37,10 @@ def verify_token(token):
             'http://localhost:5002/auth/verify',
             headers={'Authorization': token}
         )
-        return response.status_code == 200
+        if response.status_code == 200:
+            auth_data = response.json()
+            return auth_data.get('status') == 'success' and auth_data.get('data', {}).get('valid')
+        return False
     except:
         return False
 

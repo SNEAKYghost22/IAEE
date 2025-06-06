@@ -33,7 +33,9 @@ def create_transaction():
     # Verifying token
     auth_response = requests.post('http://localhost:5002/auth/verify', headers={'Authorization': token})
     print(f"Auth Response: {auth_response.text}")  # Debugging: Log response
-    if not auth_response.json().get('valid'):
+    
+    auth_data = auth_response.json()
+    if not auth_data.get('status') == 'success' or not auth_data.get('data', {}).get('valid'):
         return jsonify({'message': 'Unauthorized'}), 401
     
     # Check user balance from User Service
@@ -65,18 +67,8 @@ def create_transaction():
     
     return jsonify({
         'message': 'Transaction created successfully',
-        'transaction_id': new_transaction.id
-    }), 201
-
-    
-    # Add transaction to the database
-    new_transaction = Transaction(user_id=data['user_id'], amount=data['amount'], type=data['type'])
-    db.session.add(new_transaction)
-    db.session.commit()
-    
-    return jsonify({
-        'message': 'Transaction created successfully',
-        'transaction_id': new_transaction.id
+        'transaction_id': new_transaction.id,
+        'new_balance': new_balance
     }), 201
 
 @app.route('/transactions/user/<int:user_id>', methods=['GET'])
