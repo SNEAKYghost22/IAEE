@@ -77,22 +77,36 @@ def get_user_transactions(user_id):
     if not token:
         return jsonify({'message': 'Token is missing'}), 401
         
-    # Verifying token
-    auth_response = requests.post('http://localhost:5002/auth/verify', headers={'Authorization': token})
-    if not auth_response.ok:
-        return jsonify({'message': 'Failed to verify token'}), 401
+    # Verifying token dengan error handling yang lebih baik
+    try:
+        auth_response = requests.post('http://localhost:5002/auth/verify', headers={'Authorization': token})
+        print(f"Auth Response Status: {auth_response.status_code}")
+        print(f"Auth Response Text: {auth_response.text}")
+        
+        if not auth_response.ok:
+            return jsonify({'message': 'Failed to verify token'}), 401
 
-    auth_data = auth_response.json()
-    if not auth_data.get('valid'):
-        return jsonify({'message': 'Invalid token'}), 401
+        auth_data = auth_response.json()
+        print(f"Auth Data: {auth_data}")
+        
+        # Periksa struktur response yang sama dengan create_transaction
+        if not auth_data.get('status') == 'success' or not auth_data.get('data', {}).get('valid'):
+            return jsonify({'message': 'Invalid token'}), 401
 
-    transactions = Transaction.query.filter_by(user_id=user_id).all()
-    return jsonify([{
-        'id': t.id,
-        'amount': t.amount,
-        'type': t.type,
-        'timestamp': t.timestamp.isoformat()
-    } for t in transactions])
+        transactions = Transaction.query.filter_by(user_id=user_id).all()
+        return jsonify([{
+            'id': t.id,
+            'amount': t.amount,
+            'type': t.type,
+            'timestamp': t.timestamp.isoformat()
+        } for t in transactions])
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Request Error: {e}")
+        return jsonify({'message': 'Failed to connect to auth service'}), 500
+    except Exception as e:
+        print(f"General Error: {e}")
+        return jsonify({'message': 'Internal server error'}), 500
 
 if __name__ == '__main__':
     with app.app_context():
