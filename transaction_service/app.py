@@ -10,7 +10,7 @@ pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization", "Accept"], "expose_headers": ["Authorization"]}})
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/iae_transaction_service'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/transaction_service'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
