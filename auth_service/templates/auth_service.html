@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Auth Service - Login System</title>
+    <style>
+        :root {
+            --primary-color: #5d3587;
+            --error-color: #f44336;
+            --success-color: #4CAF50;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #ffd1e3 0%, #a367b1 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px var(--shadow-color);
+            width: 100%;
+            max-width: 500px;
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+        }
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #eee;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+            font-size: 1rem;
+        }
+        input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 5px;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .success {
+            background-color: #e8f5e9;
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+        .error {
+            background-color: #ffebee;
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .copy-btn {
+            background-color: #a367b1;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        .copy-btn:hover {
+            background-color: #8a4d9c;
+            transform: translateY(-2px);
+        }
+        .token-container {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            position: relative;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Authentication Service</h1>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('login')">Login</div>
+        <div class="tab" onclick="switchTab('verify')">Verify Token</div>
+    </div>
+
+    <div id="loginForm">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" />
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" />
+        </div>
+        <button onclick="login()" id="loginBtn">Login</button>
+    </div>
+
+    <div id="verifyForm" style="display: none;">
+        <div class="form-group">
+            <label for="token">JWT Token</label>
+            <input type="text" id="token" name="token" placeholder="Enter your JWT token" />
+        </div>
+        <button onclick="verifyToken()" id="verifyBtn">Verify Token</button>
+    </div>
+
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.tab:nth-child(${tab === 'login' ? 1 : 2})`).classList.add('active');
+        
+        document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+        document.getElementById('verifyForm').style.display = tab === 'verify' ? 'block' : 'none';
+        hideResult();
+    }
+
+    function showResult(message, isError = false) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.className = `result ${isError ? 'error' : 'success'}`;
+        resultDiv.innerHTML = message;
+    }
+
+    function hideResult() {
+        document.getElementById('result').style.display = 'none';
+    }
+
+    function setLoading(buttonId, isLoading) {
+        const button = document.getElementById(buttonId);
+        if (isLoading) {
+            button.innerHTML = '<span class="loading"></span>Loading...';
+            button.disabled = true;
+        } else {
+            button.innerHTML = buttonId === 'loginBtn' ? 'Login' : 'Verify Token';
+            button.disabled = false;
+        }
+    }
+
+    async function login() {
+        hideResult();
+        setLoading('loginBtn', true);
+
+        const data = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        };
+
+        try {
+            const response = await fetch('http://localhost:5002/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                const token = result.data.token;
+                document.getElementById('token').value = token;
+                showResult(`
+                    <h3>✅ Login Successful!</h3>
+                    <div class="token-container">
+  <textarea id="displayedToken" readonly style="width:100%; border:none; background:transparent; font-family:monospace; resize:none;">${token}</textarea>
+                    </div>
+
+                    <button onclick="copyToken()" class="copy-btn">Copy Token</button>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+                        Token telah disalin ke tab verifikasi.
+                    </p>
+                `);
+                localStorage.setItem('auth_token', token);
+            } else {
+                showResult(`❌ ${result.message}`, true);
+            }
+        } catch (error) {
+            showResult(`❌ Login failed: ${error.message}`, true);
+        } finally {
+            setLoading('loginBtn', false);
+        }
+    }
+
+    function copyToken() {
+        const token = document.getElementById('token').value;
+        navigator.clipboard.writeText(token).then(() => {
+            const copyBtn = document.querySelector('.copy-btn');
+            copyBtn.textContent = 'Copied!';
+            copyBtn.style.backgroundColor = '#4CAF50';
+            setTimeout(() => {
+                copyBtn.textContent = 'Copy Token';
+                copyBtn.style.backgroundColor = '#a367b1';
+            }, 2000);
+        }).catch(err => {
+            showResult('❌ Failed to copy token: ' + err.message, true);
+        });
+    }
+
+    async function verifyToken() {
+        hideResult();
+        setLoading('verifyBtn', true);
+        const token = document.getElementById('token').value.trim();
+        
+        if (!token) {
+            showResult('❌ Token is empty', true);
+            setLoading('verifyBtn', false);
+            return;
+        }
+        
+        try {
+            const response = await fetch('http://localhost:5002/auth/verify', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({})
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.message || 'Verification failed');
+            }
+            
+            if (result.status === 'success') {
+                showResult(`✅ Token is valid!<br/><strong>User ID:</strong> ${result.data.user_id}<br/><strong>Username:</strong> ${result.data.username}`);
+            } else {
+                showResult(`❌ ${result.message}`, true);
+            }
+        } catch (error) {
+            console.error('Verification error:', error);
+            showResult(`❌ Token verification failed: ${error.message}`, true);
+        } finally {
+            setLoading('verifyBtn', false);
+        }
+    }
+</script>
+</body>
+</html>
