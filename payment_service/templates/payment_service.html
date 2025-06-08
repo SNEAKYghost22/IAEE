@@ -6,9 +6,10 @@
     <title>BankIn - Payment Service</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Definisi variabel warna dan lainnya untuk konsistensi tema */
         :root {
             --primary-color: #5d3587;
-            --primary-dark: #5d3587;
+            --primary-dark: #4a2c6d; /* Sedikit lebih gelap dari primary */
             --secondary-color: #2196F3;
             --error-color: #f44336;
             --success-color: #4CAF50;
@@ -17,20 +18,26 @@
             --gradient-bg: linear-gradient(135deg, #ffd1e3 0%, #a367b1 100%);
         }
 
+        /* Reset CSS dasar dan box-sizing */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        /* Gaya body dan font */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             background: var(--gradient-bg);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
         }
 
-        /* Header Styles */
+        /* Gaya Header */
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -39,6 +46,10 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
+            max-width: 1200px;
+            border-radius: 15px; 
+            margin-bottom: 2rem;
             animation: slideDown 0.6s ease-out;
         }
 
@@ -109,10 +120,11 @@
             color: #666;
         }
 
-        /* Main Content */
+        /* Konten Utama */
         .main-container {
             max-width: 1000px;
-            margin: 2rem auto;
+            width: 100%; 
+            margin: 0 auto; 
             padding: 0 2rem;
         }
 
@@ -130,7 +142,7 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Interactive Tabs */
+        /* Tabs Interaktif */
         .tabs {
             display: flex;
             margin-bottom: 2rem;
@@ -174,7 +186,7 @@
             box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
         }
 
-        /* Form Styles */
+        /* Gaya Form */
         .form-group {
             margin-bottom: 1.5rem;
             position: relative;
@@ -205,7 +217,7 @@
             transform: translateY(-1px);
         }
 
-        /* Interactive Button */
+        /* Gaya Tombol Interaktif */
         button {
             width: 100%;
             padding: 1.2rem;
@@ -254,7 +266,7 @@
             transform: none;
         }
 
-        /* Loading Animation */
+        /* Animasi Loading */
         .loading {
             display: inline-block;
             width: 20px;
@@ -269,7 +281,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Feature Cards */
+        /* Kartu Fitur */
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -310,7 +322,7 @@
             font-size: 0.9rem;
         }
 
-        /* Messages */
+        /* Pesan (Sukses/Error) */
         .message {
             padding: 1.2rem;
             border-radius: 8px;
@@ -337,7 +349,7 @@
             color: #c62828;
         }
 
-        /* Table Styles */
+        /* Gaya Tabel */
         .payment-table {
             width: 100%;
             border-collapse: collapse;
@@ -370,7 +382,7 @@
             transform: scale(1.01);
         }
 
-        /* Responsive */
+        /* Responsif */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -401,7 +413,7 @@
             }
         }
 
-        /* Toast Notifications */
+        /* Notifikasi Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -421,7 +433,6 @@
     </style>
 </head>
 <body>
-    <!-- Header Section -->
     <header class="header">
         <div class="header-content">
             <div class="brand-logo">
@@ -448,7 +459,6 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <div class="main-container">
         <div class="container">
             <div class="tabs">
@@ -484,7 +494,8 @@
                 </div>
                 <div class="form-group">
                     <label for="amount"><i class="fas fa-money-bill-wave"></i> Jumlah Pembayaran</label>
-                    <input type="number" id="amount" placeholder="Masukkan jumlah pembayaran" oninput="formatCurrency(this)">
+                    <input type="text" id="amount" placeholder="Masukkan jumlah pembayaran" oninput="formatCurrency(this)" onblur="formatCurrency(this, true)">
+                    <small style="color: #666;">Maksimal Rp 10.000.000</small>
                 </div>
                 <div class="form-group">
                     <label for="token"><i class="fas fa-key"></i> Token Auth</label>
@@ -498,13 +509,17 @@
             <div id="historyForm" style="display: none;">
                 <div class="feature-card">
                     <i class="fas fa-history feature-icon"></i>
-                    <h3>Riwayat Pembayaran</h3>
+                    <h3>Riwayat Transaksi</h3>
                     <p>Pantau semua transaksi Anda dengan mudah</p>
                 </div>
 
                 <div class="form-group">
                     <label for="userIdHistory"><i class="fas fa-user"></i> User ID</label>
                     <input type="number" id="userIdHistory" placeholder="Masukkan User ID untuk melihat riwayat">
+                </div>
+                <div class="form-group">
+                    <label for="tokenHistory"><i class="fas fa-key"></i> Token Auth</label>
+                    <input type="password" id="tokenHistory" placeholder="Masukkan token autentikasi">
                 </div>
                 <button onclick="getPaymentHistory()" id="historyBtn">
                     <span id="historyBtnText">Lihat Riwayat</span>
@@ -515,136 +530,210 @@
         </div>
     </div>
 
-    <script>
-        let stats = {
-            transactions: 1000,
-            users: 500
-        };
+<script>
+    // Variabel statis untuk statistik (opsional, bisa diganti dengan fetch dari backend)
+    let stats = {
+        transactions: 1000, 
+        users: 500 
+    };
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tab:${tab === 'create' ? 'first-child' : 'last-child'}`).classList.add('active');
-            
-            document.getElementById('createForm').style.display = tab === 'create' ? 'block' : 'none';
-            document.getElementById('historyForm').style.display = tab === 'history' ? 'block' : 'none';
-            document.getElementById('result').innerHTML = '';
+    /**
+     * Mengganti tab tampilan form (Buat Pembayaran / Riwayat Pembayaran).
+     * @param {string} tabName - Nama tab ('create' atau 'history').
+     */
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        // Menentukan tab yang aktif berdasarkan nama
+        const activeTabElement = document.querySelector(`.tabs .tab:nth-child(${tabName === 'create' ? 1 : 2})`);
+        if (activeTabElement) {
+            activeTabElement.classList.add('active');
         }
+        
+        document.getElementById('createForm').style.display = tabName === 'create' ? 'block' : 'none';
+        document.getElementById('historyForm').style.display = tabName === 'history' ? 'block' : 'none';
+        document.getElementById('result').innerHTML = ''; // Kosongkan hasil saat berganti tab
+    }
 
-        function showMessage(message, isError = false) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `
-                <div class="message ${isError ? 'error' : 'success'}">
-                    <h3>${isError ? '❌' : '✅'} ${isError ? 'Error' : 'Sukses'}</h3>
-                    <p>${message}</p>
-                </div>
-            `;
-        }
+    /**
+     * Menampilkan pesan hasil operasi (sukses atau error) di area `result`.
+     * @param {string} message - Pesan yang akan ditampilkan.
+     * @param {boolean} isError - True jika pesan error, false jika sukses.
+     */
+    function showMessage(message, isError = false) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+            <div class="message ${isError ? 'error' : 'success'}">
+                <h3>${isError ? '❌' : '✅'} ${isError ? 'Error' : 'Sukses'}</h3>
+                <p>${message}</p>
+            </div>
+        `;
+    }
 
-        function showToast(message, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${isError ? 'error' : 'success'}`;
-            toast.innerHTML = `<strong>${isError ? 'Error!' : 'Sukses!'}</strong><br>${message}`;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => toast.classList.add('show'), 100);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => document.body.removeChild(toast), 300);
-            }, 3000);
-        }
+    /**
+     * Menampilkan notifikasi "toast" di pojok kanan atas layar.
+     * @param {string} message - Pesan toast.
+     * @param {boolean} isError - True jika pesan error, false jika sukses.
+     */
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${isError ? 'error' : 'success'}`;
+        toast.innerHTML = `<strong>${isError ? 'Error!' : 'Sukses!'}</strong><br>${message}`;
+        document.body.appendChild(toast);
+        
+        // Tampilkan toast dengan sedikit delay
+        setTimeout(() => toast.classList.add('show'), 100);
+        // Sembunyikan dan hapus toast setelah 3 detik
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
+    }
 
-        function formatCurrency(input) {
-            let value = input.value.replace(/[^\d]/g, '');
-            if (value) {
-                input.value = parseInt(value).toLocaleString('id-ID');
-            }
-        }
+    /**
+     * Memformat input angka menjadi format mata uang IDR dengan titik ribuan.
+     * @param {HTMLInputElement} input - Elemen input yang akan diformat.
+     * @param {boolean} finalFormat - True jika ini adalah format akhir (misal saat blur), false saat mengetik.
+     */
+    function formatCurrency(input, finalFormat = false) {
+        let value = input.value.replace(/[^\d]/g, ''); // Hapus semua non-digit (termasuk titik)
 
-        function setButtonLoading(buttonId, isLoading) {
-            const button = document.getElementById(buttonId);
-            const textSpan = document.getElementById(buttonId + 'Text');
-            
-            if (isLoading) {
-                button.disabled = true;
-                textSpan.innerHTML = '<span class="loading"></span> Processing...';
-            } else {
-                button.disabled = false;
-                textSpan.innerHTML = buttonId === 'createBtn' ? 'Proses Pembayaran' : 'Lihat Riwayat';
-            }
-        }
+        if (value) {
+            let numValue = parseInt(value, 10); // Konversi ke integer base 10
 
-        function updateStats() {
-            stats.transactions++;
-            document.getElementById('transactionCount').textContent = stats.transactions + '+';
-        }
-
-        async function createPayment() {
-            const bookingId = document.getElementById('bookingId').value;
-            const userId = document.getElementById('userId').value;
-            const amount = document.getElementById('amount').value.replace(/[^\d]/g, '');
-            const token = document.getElementById('token').value;
-
-            if (!bookingId || !userId || !amount || !token) {
-                showMessage('Semua field harus diisi', true);
-                showToast('Mohon lengkapi semua field', true);
+            // Jika nilai bukan angka atau terlalu besar untuk parseInt, reset input
+            if (isNaN(numValue) || numValue > 999999999999999) { // Batasi angka maksimum untuk mencegah overflow parseInt
+                input.value = ''; 
                 return;
             }
 
-            setButtonLoading('createBtn', true);
+            // Terapkan format ribuan jika ini final format atau angka cukup besar
+            if (finalFormat || value.length > 3) { // Format saat blur atau jika angka cukup panjang (misal 1000 jadi 1.000)
+                input.value = numValue.toLocaleString('id-ID');
+            } else {
+                input.value = numValue; // Biarkan angka mentah saat mengetik angka kecil
+            }
+        } else if (value === '') {
+            input.value = ''; // Kosongkan input jika tidak ada nilai
+        }
+    }
 
-            try {
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 2000));
+    /**
+     * Mengatur status loading pada tombol.
+     * @param {string} buttonId - ID dari tombol yang akan diatur.
+     * @param {boolean} isLoading - True untuk mode loading, false untuk mode normal.
+     */
+    function setButtonLoading(buttonId, isLoading) {
+        const button = document.getElementById(buttonId);
+        const textSpan = document.getElementById(buttonId + 'Text');
+        
+        if (isLoading) {
+            button.disabled = true;
+            textSpan.innerHTML = '<span class="loading"></span> Processing...';
+        } else {
+            button.disabled = false;
+            textSpan.innerHTML = buttonId === 'createBtn' ? 'Proses Pembayaran' : 'Lihat Riwayat';
+        }
+    }
+
+    /**
+     * Memproses permintaan pembuatan pembayaran ke Payment Service.
+     */
+    async function createPayment() {
+        const bookingId = document.getElementById('bookingId').value;
+        const userId = document.getElementById('userId').value;
+        // Ambil nilai dari input, hapus format ribuan (titik), lalu konversi ke float
+        // Penting: .replace(/\./g, '') untuk menghapus semua titik ribuan
+        const amount = parseFloat(document.getElementById('amount').value.replace(/\./g, '')); 
+        const token = document.getElementById('token').value;
+
+        // Validasi input di sisi klien sebelum mengirim request
+        if (!bookingId || !userId || isNaN(amount) || amount <= 0 || !token) { 
+            showMessage('Semua field harus diisi dengan benar (Jumlah Pembayaran harus angka positif).', true);
+            showToast('Mohon lengkapi semua field', true);
+            return;
+        }
+
+        setButtonLoading('createBtn', true); // Aktifkan status loading tombol
+
+        try {
+            const response = await fetch('http://localhost:5004/payments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` /* Pastikan format Bearer Token */
+                },
+                body: JSON.stringify({
+                    booking_id: parseInt(bookingId),
+                    user_id: parseInt(userId),
+                    amount: amount,
+                    customer_name: "Customer Name Dummy", 
+                    ticket_id: 1, 
+                    booked_seat_ids: [1, 2] 
+                })
+            });
+
+            const data = await response.json(); 
+
+            if (response.ok) {
+                showMessage(`Pembayaran berhasil diproses! ID Pembayaran: ${data.payment_id}. Status: ${data.status}. Payment Code: ${data.payment_code}`, false);
+                showToast(`Pembayaran Rp ${amount.toLocaleString('id-ID')} berhasil!`, false);
                 
-                // Simulate success response
-                const paymentId = Math.floor(Math.random() * 1000000);
-                
-                updateStats();
-                showMessage(`Pembayaran berhasil diproses! ID Pembayaran: ${paymentId}`);
-                showToast(`Pembayaran Rp ${parseInt(amount).toLocaleString('id-ID')} berhasil!`);
-                
-                // Clear form
+                if (data.status === 'completed') {
+                    console.log("Pembayaran Sukses, poin akan ditambahkan di Reward Service.");
+                }
+
                 document.getElementById('bookingId').value = '';
                 document.getElementById('userId').value = '';
-                document.getElementById('amount').value = '';
+                document.getElementById('amount').value = ''; 
+                document.getElementById('token').value = '';
                 
-            } catch (error) {
-                showMessage('Terjadi kesalahan saat memproses pembayaran', true);
-                showToast('Gagal memproses pembayaran', true);
-            } finally {
-                setButtonLoading('createBtn', false);
+            } else {
+                showMessage(`Terjadi kesalahan: ${data.message || response.statusText}`, true);
+                showToast(`Gagal memproses pembayaran: ${data.message || response.statusText}`, true);
             }
+
+        } catch (error) {
+            console.error('Error in createPayment:', error);
+            showMessage('Terjadi kesalahan saat memproses pembayaran (network error atau server tidak merespons)', true);
+            showToast('Gagal memproses pembayaran', true);
+        } finally {
+            setButtonLoading('createBtn', false); // Nonaktifkan status loading tombol
+        }
+    }
+
+    /**
+     * Mengambil riwayat pembayaran untuk User ID tertentu dari Payment Service.
+     */
+    async function getPaymentHistory() {
+        const userId = document.getElementById('userIdHistory').value;
+        const token = document.getElementById('token').value || localStorage.getItem('token'); 
+
+        if (!userId || !token) {
+            showMessage('User ID dan Token harus diisi', true);
+            showToast('Mohon lengkapi semua field', true);
+            return;
         }
 
-        async function getPaymentHistory() {
-            const userId = document.getElementById('userIdHistory').value;
+        setButtonLoading('historyBtn', true); // Aktifkan status loading tombol
 
-            if (!userId) {
-                showMessage('User ID harus diisi', true);
-                showToast('Mohon masukkan User ID', true);
-                return;
-            }
+        try {
+            const response = await fetch(`http://localhost:5004/payments/user/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-            setButtonLoading('historyBtn', true);
+            const payments = await response.json(); 
 
-            try {
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // Simulate payment history data
-                const payments = [
-                    { id: 1, booking_id: 12345, amount: 150000, status: 'Berhasil', timestamp: new Date().toISOString() },
-                    { id: 2, booking_id: 12346, amount: 275000, status: 'Berhasil', timestamp: new Date(Date.now() - 86400000).toISOString() },
-                    { id: 3, booking_id: 12347, amount: 100000, status: 'Pending', timestamp: new Date(Date.now() - 172800000).toISOString() }
-                ];
-                
+            if (response.ok) {
                 if (payments.length === 0) {
-                    showMessage('Tidak ada riwayat pembayaran');
+                    showMessage('Tidak ada riwayat pembayaran untuk user ini', false); 
                     return;
                 }
 
                 const resultDiv = document.getElementById('result');
-                resultDiv.innerHTML = `
+                let tableHTML = `
                     <table class="payment-table">
                         <thead>
                             <tr>
@@ -653,45 +742,57 @@
                                 <th><i class="fas fa-money-bill-wave"></i> Jumlah</th>
                                 <th><i class="fas fa-info-circle"></i> Status</th>
                                 <th><i class="fas fa-clock"></i> Waktu</th>
+                                <th><i class="fas fa-qrcode"></i> Kode Pembayaran</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${payments.map(p => `
-                                <tr>
-                                    <td>${p.id}</td>
-                                    <td>${p.booking_id}</td>
-                                    <td>Rp ${p.amount.toLocaleString('id-ID')}</td>
-                                    <td><span style="color: ${p.status === 'Berhasil' ? 'var(--success-color)' : 'var(--warning-color)'};">${p.status}</span></td>
-                                    <td>${new Date(p.timestamp).toLocaleString('id-ID')}</td>
-                                </tr>
-                            `).join('')}
+                `;
+
+                payments.map(p => {
+                    tableHTML += `
+                        <tr>
+                            <td>${p.id}</td>
+                            <td>${p.booking_id}</td>
+                            <td>Rp ${p.amount.toLocaleString('id-ID')}</td>
+                            <td><span style="color: ${p.status === 'completed' ? 'var(--success-color)' : 'var(--warning-color)'};">${p.status}</span></td>
+                            <td>${new Date(p.timestamp).toLocaleString('id-ID')}</td>
+                            <td>${p.payment_code || '-'}</td>
+                        </tr>
+                    `;
+                }); 
+
+                tableHTML += `
                         </tbody>
                     </table>
                 `;
-                
-                showToast(`Menampilkan ${payments.length} transaksi`);
-                
-            } catch (error) {
-                showMessage('Gagal mengambil riwayat pembayaran', true);
+                resultDiv.innerHTML = tableHTML;
+                showToast(`Menampilkan ${payments.length} transaksi`, false);
+            } else {
+                showMessage(`Gagal mengambil riwayat pembayaran: ${payments.message || response.statusText}`, true);
                 showToast('Gagal memuat riwayat', true);
-            } finally {
-                setButtonLoading('historyBtn', false);
             }
+            
+        } catch (error) {
+            console.error('Error in getPaymentHistory:', error);
+            showMessage('Gagal terhubung ke server untuk riwayat pembayaran', true);
+            showToast('Gagal terhubung ke server', true);
+        } finally {
+            setButtonLoading('historyBtn', false); 
         }
+    }
 
-        // Initialize
-        window.onload = function() {
-            // Add smooth scrolling and other interactive effects
-            document.querySelectorAll('input').forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'translateY(-2px)';
-                });
-                
-                input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'translateY(0)';
-                });
+    // Initialize: Menjalankan fungsi saat dokumen selesai dimuat
+    window.onload = function() {
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
             });
-        };
-    </script>
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+    };
+</script>
 </body>
 </html>

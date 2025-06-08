@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Service untuk otentikasi
+  auth-service:
+    image: awpizcuy/auth-service:latest
+    container_name: auth-service
+    ports:
+      - "5002:5002"
+    networks:
+      - backend
+
+  # Service untuk pembayaran
+  payment-service:
+    image: awpizcuy/payment-service:latest
+    container_name: payment-service
+    ports:
+      - "5004:5004"
+    networks:
+      - backend
+
+  # Service untuk reward/poin
+  reward-service:
+    image: awpizcuy/reward-service:latest
+    container_name: reward-service
+    ports:
+      - "5005:5005"
+    networks:
+      - backend
+
+  # Service untuk transaksi (DIperbaiki)
+  transaction-service:
+    image: awpizcuy/transaction-service:latest # <-- DIUBAH
+    container_name: transaction-service      # <-- DIUBAH
+    ports:
+      - "5003:5003"
+    networks:
+      - backend
+
+  # Service untuk pengguna (Diperbaiki)
+  user-service:
+    image: awpizcuy/user-service:latest # <-- DIUBAH
+    container_name: user-service      # <-- DIUBAH
+    ports:
+      - "5001:5001"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

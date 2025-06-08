@@ -1,0 +1,6 @@
+Flask
+Flask-Cors
+PyJWT
+requests
+PyMySQL
+gunicorn

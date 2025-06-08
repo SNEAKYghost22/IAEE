@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankIn - Reward Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5d3587;
+            --primary-dark: #4d2b70;
+            --secondary-color: #2196F3;
+            --error-color: #f44336;
+            --success-color: #4CAF50;
+            --warning-color: #ff9800;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --gradient-bg: linear-gradient(135deg, #ffd1e3 0%, #a367b1 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.6s ease-out;
+            width: 100%;
+            max-width: 1000px;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 0.5rem;
+            gap: 0.5rem;
+            flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem 1.5rem; /* Adjusted padding */
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            min-width: 120px; /* Minimum width for tabs */
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            padding: 1rem 0;
+        }
+
+        .points-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .points-amount {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .points-label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .transaction-list {
+            margin-top: 2rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        .transaction-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-amount {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+
+        .transaction-date {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .transaction-type {
+            padding: 0.3em 0.8em;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .transaction-type.earn {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+
+        .transaction-type.redeem, .transaction-type.redeem_item { /* Added redeem_item */
+            background-color: #ffebee;
+            color: var(--error-color);
+        }
+        
+        .reward-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .reward-item-card {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+        }
+
+        .reward-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .reward-item-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .reward-item-card p {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 1rem;
+            flex-grow: 1; /* Allows description to take available space */
+        }
+
+        .reward-item-card .points-cost {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .reward-item-card button {
+            background: #2196F3; /* A different color for action button */
+            margin-top: auto; /* Push button to bottom */
+        }
+
+        .reward-item-card button:hover {
+            background: #1976D2;
+        }
+        
+        .redeemed-codes-list {
+            margin-top: 2rem;
+        }
+
+        .redeemed-code-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .redeemed-code-item h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .redeemed-code-item p {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .redeemed-code-item .code-value {
+            font-family: 'monospace';
+            background-color: #e0e0e0;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+            display: block;
+            margin-bottom: 0.5rem;
+            word-break: break-all; /* Ensure long codes wrap */
+        }
+
+        .redeemed-code-item .status {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #666;
+        }
+        .redeemed-code-item .status.used { color: var(--error-color); }
+        .redeemed-code-item .status.active { color: var(--success-color); }
+        .redeemed-code-item .status.expired { color: var(--warning-color); }
+
+
+        /* Form and Buttons */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(93, 53, 135, 0.2);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast strong {
+            font-size: 1.1em;
+            color: var(--primary-color);
+        }
+        .toast.error strong {
+            color: var(--error-color);
+        }
+        .toast.success strong {
+            color: var(--success-color);
+        }
+        
+        .message { /* For general messages inside the container */
+            padding: 1em;
+            border-radius: 8px;
+            margin-bottom: 1em;
+            display: none; /* Hidden by default */
+        }
+        .message.success { background-color: #e8f5e9; border-left: 4px solid var(--success-color); color: #2e7d32; }
+        .message.error { background-color: #ffebee; border-left: 4px solid var(--error-color); color: #c62828; }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="brand-logo">
+                <i class="fas fa-gift"></i>
+                <div>
+                    <div class="brand-name">BankIn Rewards</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('points')">Point Saya</div>
+                <div class="tab" onclick="switchTab('redeem')">Tukar Point Biasa</div>
+                <div class="tab" onclick="switchTab('redeem_item')">Tukar Reward Item</div>
+                <div class="tab" onclick="switchTab('history')">Riwayat Transaksi Poin</div>
+                <div class="tab" onclick="switchTab('redeemed_codes_history')">Riwayat Kode Penukaran</div>
+            </div>
+
+            <div id="result-message" class="message"></div>
+
+            <div id="points-tab" class="tab-content">
+                <div class="points-card">
+                    <div class="points-label">Total Point Anda</div>
+                    <div class="points-amount" id="total-points">0</div>
+                </div>
+                <div class="form-group">
+                    <label for="userIdPoints">User ID</label>
+                    <input type="number" id="userIdPoints" placeholder="Masukkan User ID">
+                </div>
+                 <div class="form-group">
+                    <label for="tokenPoints">Token Auth</label>
+                    <input type="password" id="tokenPoints" placeholder="Masukkan token autentikasi">
+                </div>
+                <button onclick="loadUserPoints()" id="loadPointsBtn">
+                    <span id="loadPointsBtnText">Muat Poin</span>
+                </button>
+            </div>
+
+            <div id="redeem-tab" class="tab-content" style="display: none;">
+                <div class="redeem-form">
+                    <p style="margin-bottom: 1em;">Setiap 10 poin bisa ditukar dengan diskon Rp 5.000.</p>
+                    <div class="form-group">
+                        <label for="redeem-points">Jumlah Point yang Ingin Ditukar</label>
+                        <input type="number" id="redeem-points" placeholder="Masukkan jumlah point (kelipatan 10)">
+                    </div>
+                    <div class="form-group">
+                        <label for="userIdRedeem">User ID</label>
+                        <input type="number" id="userIdRedeem" placeholder="Masukkan User ID">
+                    </div>
+                     <div class="form-group">
+                        <label for="tokenRedeem">Token Auth</label>
+                        <input type="password" id="tokenRedeem" placeholder="Masukkan token autentikasi">
+                    </div>
+                    <button onclick="redeemPoints()" id="redeemBtn">
+                        <span id="redeemBtnText">Tukar Point</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="redeem_item-tab" class="tab-content" style="display: none;">
+                <h2>Pilih Reward untuk Ditukar</h2>
+                <div class="form-group">
+                    <label for="userIdRewardItem">User ID</label>
+                    <input type="number" id="userIdRewardItem" placeholder="Masukkan User ID">
+                </div>
+                <div class="form-group">
+                    <label for="tokenRewardItem">Token Auth</label>
+                    <input type="password" id="tokenRewardItem" placeholder="Masukkan token autentikasi">
+                </div>
+                <button onclick="loadRewardItems()" id="loadRewardItemsBtn">
+                    <span id="loadRewardItemsBtnText">Muat Daftar Reward</span>
+                </button>
+                <div class="reward-items-grid" id="reward-items-list">
+                    </div>
+            </div>
+
+            <div id="history-tab" class="tab-content" style="display: none;">
+                <h2>Riwayat Transaksi Poin</h2>
+                <div class="form-group">
+                    <label for="userIdHistory">User ID</label>
+                    <input type="number" id="userIdHistory" placeholder="Masukkan User ID">
+                </div>
+                 <div class="form-group">
+                    <label for="tokenHistory">Token Auth</label>
+                    <input type="password" id="tokenHistory" placeholder="Masukkan token autentikasi">
+                </div>
+                <button onclick="loadTransactionHistory()" id="loadHistoryBtn">
+                    <span id="loadHistoryBtnText">Muat Riwayat</span>
+                </button>
+                <div class="transaction-list" id="transaction-history">
+                    </div>
+            </div>
+
+            <div id="redeemed_codes_history-tab" class="tab-content" style="display: none;">
+                <h2>Riwayat Kode Penukaran Anda</h2>
+                <div class="form-group">
+                    <label for="userIdRedeemedCodes">User ID</label>
+                    <input type="number" id="userIdRedeemedCodes" placeholder="Masukkan User ID">
+                </div>
+                 <div class="form-group">
+                    <label for="tokenRedeemedCodes">Token Auth</label>
+                    <input type="password" id="tokenRedeemedCodes" placeholder="Masukkan token autentikasi">
+                </div>
+                <button onclick="loadRedeemedCodesHistory()" id="loadRedeemedCodesBtn">
+                    <span id="loadRedeemedCodesBtnText">Muat Kode Penukaran</span>
+                </button>
+                <div class="redeemed-codes-list" id="redeemed-codes-history-list">
+                    </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function showMessage(message, isError = false) {
+            const resultDiv = document.getElementById('result-message'); 
+            if (resultDiv) {
+                resultDiv.className = `message ${isError ? 'error' : 'success'}`;
+                resultDiv.innerHTML = `<h3>${isError ? '❌' : '✅'} ${isError ? 'Error' : 'Sukses'}</h3><p>${message}</p>`;
+                resultDiv.style.display = 'block';
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function clearMessage() {
+            const resultDiv = document.getElementById('result-message');
+            if (resultDiv) {
+                resultDiv.style.display = 'none';
+                resultDiv.innerHTML = '';
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : 'success'}`;
+            toast.innerHTML = `<strong>${isError ? 'Error!' : 'Sukses!'}</strong><br>${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            const textSpan = document.getElementById(buttonId + 'Text');
+            
+            if (isLoading) {
+                button.disabled = true;
+                textSpan.innerHTML = '<span class="loading"></span> Processing...';
+            } else {
+                button.disabled = false;
+                if (buttonId === 'loadPointsBtn') textSpan.innerHTML = 'Muat Poin';
+                else if (buttonId === 'redeemBtn') textSpan.innerHTML = 'Tukar Point';
+                else if (buttonId === 'loadHistoryBtn') textSpan.innerHTML = 'Muat Riwayat';
+                else if (buttonId === 'loadRewardItemsBtn') textSpan.innerHTML = 'Muat Daftar Reward';
+                else if (buttonId === 'loadRedeemedCodesBtn') textSpan.innerHTML = 'Muat Kode Penukaran';
+            }
+        }
+
+        function switchTab(tabName) {
+            clearMessage();
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).style.display = 'block';
+            
+            // Set active class for the clicked tab
+            const clickedTab = event.target.closest('.tab'); // Use closest to handle clicks on child elements like <i>
+            if (clickedTab) {
+                clickedTab.classList.add('active');
+            }
+
+            // Prefill inputs for the new tab from localStorage
+            const storedUserId = localStorage.getItem('userId');
+            const storedToken = localStorage.getItem('token');
+            if (storedUserId) {
+                document.getElementById(`userId${tabName === 'points' ? 'Points' : (tabName === 'redeem' ? 'Redeem' : (tabName === 'history' ? 'History' : (tabName === 'redeem_item' ? 'RewardItem' : 'RedeemedCodes')))}`).value = storedUserId;
+            }
+            if (storedToken) {
+                document.getElementById(`token${tabName === 'points' ? 'Points' : (tabName === 'redeem' ? 'Redeem' : (tabName === 'history' ? 'History' : (tabName === 'redeem_item' ? 'RewardItem' : 'RedeemedCodes')))}`).value = storedToken;
+            }
+
+            // Optionally, load data when switching tabs
+            if (tabName === 'points') {
+                loadUserPoints();
+            } else if (tabName === 'history') {
+                loadTransactionHistory();
+            } else if (tabName === 'redeem_item') {
+                loadRewardItems();
+            } else if (tabName === 'redeemed_codes_history') {
+                loadRedeemedCodesHistory();
+            }
+        }
+
+        async function loadUserPoints() {
+            clearMessage();
+            const userId = document.getElementById('userIdPoints').value;
+            const token = document.getElementById('tokenPoints').value;
+
+            if (!userId || !token) {
+                showMessage('User ID dan Token Auth harus diisi.', true);
+                showToast('Mohon lengkapi semua field', true);
+                document.getElementById('total-points').textContent = '0';
+                return;
+            }
+            if (isNaN(parseInt(userId))) {
+                showMessage('User ID harus berupa angka yang valid.', true);
+                showToast('Input tidak valid', true);
+                return;
+            }
+
+            setButtonLoading('loadPointsBtn', true);
+
+            try {
+                const response = await fetch(`http://localhost:5005/rewards/points/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token.trim()}`
+                    }
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('total-points').textContent = data.points;
+                    showMessage(`Poin Anda: ${data.points}`, false);
+                    showToast('Poin berhasil dimuat!');
+                } else {
+                    document.getElementById('total-points').textContent = '0';
+                    showMessage(data.message || 'Gagal memuat data poin', true);
+                    showToast('Gagal memuat poin', true);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Gagal terhubung ke server atau format response tidak valid', true);
+                showToast('Gagal terhubung ke server', true);
+            } finally {
+                setButtonLoading('loadPointsBtn', false);
+            }
+        }
+
+        async function updateTransactionHistory(transactions) {
+            const historyContainer = document.getElementById('transaction-history');
+            historyContainer.innerHTML = ''; // Clear previous history
+
+            if (transactions.length === 0) {
+                historyContainer.innerHTML = '<p style="text-align: center; color: #666;">Tidak ada riwayat transaksi poin.</p>';
+                return;
+            }
+
+            transactions.forEach(transaction => {
+                const item = document.createElement('div');
+                item.className = 'transaction-item';
+                const typeClass = transaction.transaction_type; // e.g., 'earn', 'redeem', 'redeem_item'
+                const pointsDisplay = transaction.points > 0 ? `+${transaction.points}` : transaction.points;
+
+                item.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-amount">${pointsDisplay} points</div>
+                        <div class="transaction-date">${new Date(transaction.created_at).toLocaleDateString()} ${new Date(transaction.created_at).toLocaleTimeString()}</div>
+                    </div>
+                    <div class="transaction-type ${typeClass}">${transaction.transaction_type.replace('_', ' ')}</div>
+                `;
+                historyContainer.appendChild(item);
+            });
+        }
+
+        async function loadTransactionHistory() {
+            clearMessage();
+            const userId = document.getElementById('userIdHistory').value;
+            const token = document.getElementById('tokenHistory').value;
+
+            if (!userId || !token) {
+                showMessage('User ID dan Token Auth harus diisi.', true);
+                showToast('Mohon lengkapi semua field', true);
+                document.getElementById('transaction-history').innerHTML = '';
+                return;
+            }
+             if (isNaN(parseInt(userId))) {
+                showMessage('User ID harus berupa angka yang valid.', true);
+                showToast('Input tidak valid', true);
+                return;
+            }
+
+            setButtonLoading('loadHistoryBtn', true);
+
+            try {
+                const response = await fetch(`http://localhost:5005/rewards/points/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token.trim()}`
+                    }
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    updateTransactionHistory(data.point_transactions);
+                    showMessage(`Riwayat transaksi berhasil dimuat (${data.point_transactions.length} entri).`, false);
+                    showToast('Riwayat berhasil dimuat!');
+                } else {
+                    updateTransactionHistory([]); // Clear history on error
+                    showMessage(data.message || 'Gagal memuat riwayat transaksi', true);
+                    showToast('Gagal memuat riwayat', true);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Gagal terhubung ke server atau format response tidak valid', true);
+                showToast('Gagal terhubung ke server', true);
+            } finally {
+                setButtonLoading('loadHistoryBtn', false);
+            }
+        }
+
+        async function redeemPoints() {
+            clearMessage();
+            const points = document.getElementById('redeem-points').value;
+            const userId = document.getElementById('userIdRedeem').value;
+            const token = document.getElementById('tokenRedeem').value;
+
+            if (!userId || !points || !token) {
+                showMessage('User ID, Jumlah Poin, dan Token Auth harus diisi.', true);
+                showToast('Mohon lengkapi semua field', true);
+                return;
+            }
+            if (isNaN(parseInt(userId)) || isNaN(parseInt(points))) {
+                showMessage('User ID dan Jumlah Poin harus berupa angka yang valid.', true);
+                showToast('Input tidak valid', true);
+                return;
+            }
+            if (parseInt(points) <= 0) {
+                showMessage('Jumlah poin yang ditukar harus positif.', true);
+                showToast('Jumlah poin tidak valid', true);
+                return;
+            }
+            if (parseInt(points) % 10 !== 0) {
+                showMessage('Poin hanya bisa ditukar dalam kelipatan 10.', true);
+                showToast('Kelipatan poin tidak valid', true);
+                return;
+            }
+
+            setButtonLoading('redeemBtn', true);
+
+            try {
+                const response = await fetch('http://localhost:5005/rewards/redeem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token.trim()}`
+                    },
+                    body: JSON.stringify({
+                        user_id: parseInt(userId),
+                        points: parseInt(points)
+                    })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(`Berhasil menukar ${data.points_redeemed} poin untuk diskon sebesar Rp ${data.discount_amount.toLocaleString('id-ID')}. Sisa poin Anda: ${data.remaining_points}.`, false);
+                    showToast('Poin berhasil ditukar!');
+                    document.getElementById('redeem-points').value = ''; // Clear input
+                    // Auto-update total points on the 'points' tab
+                    document.getElementById('total-points').textContent = data.remaining_points;
+                } else {
+                    showMessage(data.message || 'Gagal menukar poin', true);
+                    showToast('Gagal menukar poin', true);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Gagal terhubung ke server atau format response tidak valid', true);
+                showToast('Gagal terhubung ke server', true);
+            } finally {
+                setButtonLoading('redeemBtn', false);
+            }
+        }
+
+
+        // NEW FUNCTIONS FOR REWARD ITEMS
+        async function loadRewardItems() {
+            clearMessage();
+            const userId = document.getElementById('userIdRewardItem').value;
+            const token = document.getElementById('tokenRewardItem').value;
+
+            if (!userId || !token) { // Token might be needed for verify_auth_token on server side
+                showMessage('User ID dan Token Auth harus diisi untuk memuat daftar reward.', true);
+                showToast('Lengkapi info user', true);
+                document.getElementById('reward-items-list').innerHTML = '';
+                return;
+            }
+            if (isNaN(parseInt(userId))) {
+                showMessage('User ID harus berupa angka yang valid.', true);
+                showToast('Input tidak valid', true);
+                return;
+            }
+
+            setButtonLoading('loadRewardItemsBtn', true);
+            
+            try {
+                const response = await fetch('http://localhost:5005/rewards/items'); // Public endpoint for now
+                const items = await response.json();
+
+                if (response.ok) {
+                    const rewardListContainer = document.getElementById('reward-items-list');
+                    rewardListContainer.innerHTML = ''; // Clear previous items
+
+                    if (items.length === 0) {
+                        rewardListContainer.innerHTML = '<p style="text-align: center; color: #666;">Tidak ada reward yang tersedia saat ini.</p>';
+                        return;
+                    }
+
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'reward-item-card';
+                        card.innerHTML = `
+                            <h3>${item.name}</h3>
+                            <p>${item.description}</p>
+                            <div class="points-cost">${item.points_cost} Poin</div>
+                            <button onclick="redeemRewardItem(${item.id})">Tukar Sekarang</button>
+                        `;
+                        rewardListContainer.appendChild(card);
+                    });
+                    showMessage('Daftar reward berhasil dimuat.', false);
+                    showToast('Daftar reward dimuat!');
+
+                } else {
+                    showMessage(items.message || 'Gagal memuat daftar reward.', true);
+                    showToast('Gagal memuat reward', true);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Gagal terhubung ke server atau format response tidak valid.', true);
+                showToast('Gagal terhubung ke server', true);
+            } finally {
+                setButtonLoading('loadRewardItemsBtn', false);
+            }
+        }
+
+        async function redeemRewardItem(rewardItemId) {
+            clearMessage();
+            const userId = document.getElementById('userIdRewardItem').value;
+            const token = document.getElementById('tokenRewardItem').value;
+
+            if (!userId || !token) {
+                showMessage('User ID dan Token Auth harus diisi sebelum menukar reward.', true);
+                showToast('Lengkapi info user', true);
+                return;
+            }
+
+            // Disable all redeem buttons temporarily to prevent double click
+            document.querySelectorAll('.reward-item-card button').forEach(btn => btn.disabled = true);
+            
+            try {
+                const response = await fetch('http://localhost:5005/rewards/redeem_item', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token.trim()}`
+                    },
+                    body: JSON.stringify({
+                        user_id: parseInt(userId),
+                        reward_item_id: rewardItemId
+                    })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(`✅ Berhasil menukar ${data.reward_name}! Kode penukaran Anda: <strong>${data.redemption_code}</strong>. Sisa poin: ${data.remaining_points}.`, false);
+                    showToast('Reward berhasil ditukar!');
+                    // Update total points in the points tab
+                    document.getElementById('total-points').textContent = data.remaining_points;
+                } else {
+                    showMessage(data.message || 'Gagal menukar reward.', true);
+                    showToast('Gagal menukar reward', true);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Gagal terhubung ke server atau format response tidak valid.', true);
+                showToast('Gagal terhubung ke server', true);
+            } finally {
+                // Re-enable all redeem buttons
+                document.querySelectorAll('.reward-item-card button').forEach(btn => btn.disabled = false);
+            }
+        }
+
+        async function loadRedeemedCodesHistory() {
+            clearMessage();
+            const userId = document.getElementById('userIdRedeemedCodes').value;
+            const token = document.getElementById('tokenRedeemedCodes').value;
+
+            if (!userId || !token) {
+                showMessage('User ID dan Token Auth harus diisi untuk memuat riwayat kode penukaran.', true);
+                showToast('Lengkapi info user', true);
+                document.getElementById('redeemed-codes-history-list').innerHTML = '';
+                return;
+            }
+            if (isNaN(parseInt(userId))) {
+                showMessage('User ID harus berupa angka yang valid.', true);
+                showToast('Input tidak valid', true);
+                return;
+            }
+
+            setButtonLoading('loadRedeemedCodesBtn', true);
+
+            try {
+                const response = await fetch(`http://localhost:5005/rewards/redeemed_codes/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token.trim()}`
+                    }
+                });
+                const codes = await response.json();
+
+                if (response.ok) {
+                    const codesListContainer = document.getElementById('redeemed-codes-history-list');
+                    codesListContainer.innerHTML = ''; // Clear previous items
+
+                    if (codes.length === 0) {
+                        codesListContainer.innerHTML = '<p style="text-align: center; color: #666;">Tidak ada kode penukaran yang Anda miliki.</p>';
+                        return;
+                    }
+
+                    codes.forEach(code => {
+                        const item = document.createElement('div');
+                        item.className = 'redeemed-code-item';
+                        let statusText = '';
+                        let statusClass = '';
+                        const now = new Date();
+                        const expiresAt = code.expires_at ? new Date(code.expires_at) : null;
+
+                        if (code.is_used) {
+                            statusText = 'Telah Digunakan';
+                            statusClass = 'used';
+                        } else if (expiresAt && now > expiresAt) {
+                            statusText = 'Kadaluarsa';
+                            statusClass = 'expired';
+                        } else {
+                            statusText = 'Aktif';
+                            statusClass = 'active';
+                        }
+
+                        item.innerHTML = `
+                            <h4>${code.reward_name}</h4>
+                            <p>Kode Penukaran: <span class="code-value">${code.code}</span></p>
+                            <p>Digenerate: ${new Date(code.generated_at).toLocaleString()}</p>
+                            ${code.expires_at ? `<p>Kadaluarsa: ${new Date(code.expires_at).toLocaleString()}</p>` : ''}
+                            <p>Status: <span class="status ${statusClass}">${statusText}</span></p>
+                        `;
+                        codesListContainer.appendChild(item);
+                    });
+                    showMessage('Riwayat kode penukaran berhasil dimuat.', false);
+                    showToast('Kode penukaran dimuat!');
+
+                } else {
+                    showMessage(codes.message || 'Gagal memuat riwayat kode penukaran.', true);
+                    showToast('Gagal memuat kode', true);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Gagal terhubung ke server atau format response tidak valid.', true);
+                showToast('Gagal terhubung ke server', true);
+            } finally {
+                setButtonLoading('loadRedeemedCodesBtn', false);
+            }
+        }
+
+
+        // Load points when page loads and prefill inputs
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedToken = localStorage.getItem('token');
+            const storedUserId = localStorage.getItem('userId');
+
+            if (storedToken) {
+                document.getElementById('tokenPoints').value = storedToken;
+                document.getElementById('tokenRedeem').value = storedToken;
+                document.getElementById('tokenHistory').value = storedToken;
+                document.getElementById('tokenRewardItem').value = storedToken; /* NEW */
+                document.getElementById('tokenRedeemedCodes').value = storedToken; /* NEW */
+            }
+            if (storedUserId) {
+                document.getElementById('userIdPoints').value = storedUserId;
+                document.getElementById('userIdRedeem').value = storedUserId;
+                document.getElementById('userIdHistory').value = storedUserId;
+                document.getElementById('userIdRewardItem').value = storedUserId; /* NEW */
+                document.getElementById('userIdRedeemedCodes').value = storedUserId; /* NEW */
+            }
+
+            // Initial load of points if user_id is already available
+            // This will trigger loadUserPoints() which in turn calls verify_auth_token
+            if (storedUserId && storedToken) {
+                loadUserPoints();
+            }
+
+             // Add smooth scrolling and other interactive effects for inputs
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.boxShadow = '0 0 0 3px rgba(93, 53, 135, 0.2)';
+                    this.style.transform = 'translateY(-1px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.style.boxShadow = 'none';
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
