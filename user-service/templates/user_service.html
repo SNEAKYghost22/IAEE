@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankIn - User Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5d3587;
+            --primary-dark: #4a2869;
+            --secondary-color: #2196F3;
+            --error-color: #f44336;
+            --success-color: #4CAF50;
+            --warning-color: #ff9800;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --gradient-bg: linear-gradient(135deg, #ffd1e3 0%, #a367b1 100%);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.6s ease-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .brand-logo i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .brand-name {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .brand-tagline {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: -5px;
+        }
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 0.5rem;
+        }
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .main-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            background: white;
+        }
+        input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(93, 53, 135, 0.1);
+            transform: translateY(-1px);
+        }
+        button {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(93, 53, 135, 0.3);
+        }
+        .message {
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            animation: slideInRight 0.5s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .message.success {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-left: 4px solid var(--success-color);
+            color: #2e7d32;
+        }
+        .message.error {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-left: 4px solid var(--error-color);
+            color: #c62828;
+        }
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+        }
+        pre {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="brand-logo">
+                <i class="fas fa-university"></i>
+                <div>
+                    <div class="brand-name">BankIn</div>
+                    <div class="brand-tagline">Solusi Pembayaran Modern untuk Perjalanan Anda</div>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Transaksi</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Pengguna Aktif</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="container">
+            <h2 style="margin-bottom: 1.5rem; color: #333; text-align: center;">
+                <i class="fas fa-users" style="margin-right: 0.5rem; color: var(--primary-color);"></i>
+                Manajemen User
+            </h2>
+            
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--primary-dark); border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">Buat User Baru</h3>
+            <div class="form-group">
+                <label for="username">
+                    <i class="fas fa-user" style="margin-right: 0.3rem;"></i>
+                    Username
+                </label>
+                <input type="text" id="username" placeholder="Masukkan Username">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock" style="margin-right: 0.3rem;"></i>
+                    Password
+                </label>
+                <input type="password" id="password" placeholder="Masukkan Password">
+            </div>
+            
+            <div class="form-group">
+                <label for="balance">
+                    <i class="fas fa-wallet" style="margin-right: 0.3rem;"></i>
+                    Saldo Awal
+                </label>
+                <input type="text" id="balance" value="0" placeholder="Masukkan Saldo Awal" oninput="formatCurrency(this)">
+            </div>
+            
+            <button onclick="createUser()">
+                <i class="fas fa-user-plus" style="margin-right: 0.5rem;"></i>
+                Buat User
+            </button>
+
+            <h3 style="margin: 2.5rem 0 1rem 0; color: var(--primary-dark); border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">Cek Data User</h3>
+            
+            <div class="form-group">
+                <label for="userId">
+                    <i class="fas fa-id-card" style="margin-right: 0.3rem;"></i>
+                    User ID
+                </label>
+                <input type="number" id="userId" placeholder="Masukkan User ID">
+            </div>
+            
+            <button onclick="getUser()">
+                <i class="fas fa-search" style="margin-right: 0.5rem;"></i>
+                Cek User
+            </button>
+
+            <div id="result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // DIUBAH: Fungsi baru untuk format mata uang
+        function formatCurrency(input) {
+            // 1. Ambil nilai dan hapus semua karakter non-digit (seperti koma)
+            let value = input.value.replace(/[^\d]/g, '');
+            
+            // 2. Jika ada nilainya, format dengan pemisah koma
+            if (value) {
+                // Gunakan toLocaleString('en-US') untuk pemisah koma
+                input.value = parseInt(value, 10).toLocaleString('en-US');
+            } else {
+                input.value = '';
+            }
+        }
+
+        async function createUser() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            
+            try {
+                // DIUBAH: Hapus koma dari nilai saldo sebelum mengirim ke server
+                const balanceValue = document.getElementById('balance').value.replace(/,/g, '');
+
+                const data = {
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value,
+                    balance: parseFloat(balanceValue) || 0
+                };
+
+                if (!data.username || !data.password) {
+                    throw new Error('Username dan Password harus diisi!');
+                }
+
+                const response = await fetch('http://localhost:5001/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors',
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                resultDiv.innerHTML = `<div class="message success"><h3><i class="fas fa-check-circle"></i> Berhasil membuat user!</h3><pre>${JSON.stringify(result, null, 2)}</pre></div>`;
+                
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('balance').value = '0';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="message error"><h3><i class="fas fa-exclamation-triangle"></i> Error!</h3><p>${error.message}</p></div>`;
+            }
+        }
+
+        async function getUser() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            
+            try {
+                const userId = document.getElementById('userId').value;
+                if (!userId) {
+                    throw new Error('User ID harus diisi!');
+                }
+
+                const response = await fetch(`http://localhost:5001/users/${userId}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' },
+                    mode: 'cors'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                resultDiv.innerHTML = `<div class="message success"><h3><i class="fas fa-user-check"></i> Data User:</h3><pre>${JSON.stringify(result, null, 2)}</pre></div>`;
+                    
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="message error"><h3><i class="fas fa-exclamation-triangle"></i> Error!</h3><p>${error.message}</p></div>`;
+            }
+        }
+    </script>
+</body>
+</html>

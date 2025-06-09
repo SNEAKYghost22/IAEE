@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankIn - Authentication Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5d3587;
+            --primary-dark: #4a2c6a;
+            --secondary-color: #7c4dff;
+            --accent-color: #9c27b0;
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+            --warning-color: #ff9800;
+            --neutral-100: #f8f9fa;
+            --neutral-200: #e9ecef;
+            --neutral-300: #dee2e6;
+            --neutral-500: #6c757d;
+            --neutral-700: #495057;
+            --neutral-800: #343a40;
+            --neutral-900: #212529;
+            --gradient-bg: linear-gradient(135deg, #ffd1e3 0%, #e1bee7 50%, #d1c4e9 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            color: var(--neutral-800);
+        }
+
+        /* Header Styles - Matching BankIn Style */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            letter-spacing: -0.02em;
+        }
+
+        .brand-tagline {
+            font-size: 0.9rem;
+            color: var(--neutral-500);
+            margin-top: -5px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--neutral-500);
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(93, 53, 135, 0.15);
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: var(--neutral-500);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        /* Interactive Tabs - BankIn Style */
+        .tabs {
+            display: flex;
+            margin-bottom: 3rem;
+            background: var(--neutral-100);
+            border-radius: 15px;
+            padding: 0.5rem;
+            gap: 0.5rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1.2rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--neutral-700);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(93, 53, 135, 0.3);
+        }
+
+        .tab:hover:not(.active) {
+            color: var(--primary-color);
+            background: rgba(93, 53, 135, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: var(--neutral-700);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 1.25rem 1rem;
+            border: 2px solid var(--neutral-200);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1rem;
+            background: white;
+            color: var(--neutral-800);
+            font-weight: 500;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(93, 53, 135, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input::placeholder {
+            color: var(--neutral-500);
+            font-weight: 400;
+        }
+
+        /* Primary Button - BankIn Style */
+        .btn-primary {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.7s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(93, 53, 135, 0.4);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary:disabled:hover {
+            transform: none;
+            box-shadow: none;
+            background: var(--primary-color);
+        }
+
+        /* Secondary Button */
+        .btn-secondary {
+            background: var(--accent-color);
+            padding: 0.75rem 1.5rem;
+            width: auto;
+            display: inline-flex;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            border-radius: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #8e24aa;
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.3);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Feature Cards - BankIn Style */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(93, 53, 135, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(93, 53, 135, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--neutral-600);
+            font-size: 0.9rem;
+        }
+
+        /* Result Messages */
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .result.success {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border: 1px solid #a5d6a7;
+            color: #2e7d32;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .result.error {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border: 1px solid #ef9a9a;
+            color: #c62828;
+            border-left: 4px solid var(--error-color);
+        }
+
+        .result h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .token-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .token-container textarea {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: var(--neutral-700);
+            min-height: 120px;
+            width: 100%;
+            border: none;
+            background: transparent;
+            resize: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .header-stats {
+                gap: 1rem;
+            }
+
+            .main-container {
+                margin: 2rem auto;
+                padding: 0 1rem;
+            }
+
+            .container {
+                padding: 2rem 1.5rem;
+                border-radius: 15px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                padding: 1rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            input, .btn-primary {
+                padding: 1rem;
+            }
+        }
+
+        /* Hidden state */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Additional BankIn specific styles */
+        .auth-features {
+            margin-top: 3rem;
+        }
+
+        .auth-features h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section - Matching BankIn -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand-logo">
+                <i class="fas fa-university"></i>
+                <div class="brand-info">
+                    <div class="brand-name">BankIn</div>
+                    <div class="brand-tagline">Solusi Pembayaran Modern untuk Perjalanan Anda</div>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Transaksi</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Pengguna Aktif</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <h1 class="page-title">Authentication Service</h1>
+            <p class="page-subtitle">Masuk ke sistem untuk mengakses layanan pembayaran BankIn</p>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('login')">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </div>
+                <div class="tab" onclick="switchTab('verify')">
+                    <i class="fas fa-shield-alt"></i>
+                    Verifikasi Token
+                </div>
+            </div>
+
+            <div id="loginForm">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i>
+                        Username
+                    </label>
+                    <input type="text" id="username" name="username" placeholder="Masukkan Username Anda" />
+                </div>
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Password
+                    </label>
+                    <input type="password" id="password" name="password" placeholder="Masukkan Password Anda" />
+                </div>
+                <button class="btn-primary" onclick="login()" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Masuk
+                </button>
+            </div>
+
+            <div id="verifyForm" class="hidden">
+                <div class="form-group">
+                    <label for="token">
+                        <i class="fas fa-key"></i>
+                        JWT Token
+                    </label>
+                    <input type="text" id="token" name="token" placeholder="Masukkan JWT Token untuk verifikasi" />
+                </div>
+                <button class="btn-primary" onclick="verifyToken()" id="verifyBtn">
+                    <i class="fas fa-check-circle"></i>
+                    Verifikasi Token
+                </button>
+            </div>
+
+            <div id="result" class="result hidden"></div>
+
+           
+    <script>
+        function switchTab(tab) {
+            // Update tab active state
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab:nth-child(${tab === 'login' ? 1 : 2})`).classList.add('active');
+            
+            // Show/hide forms
+            const loginForm = document.getElementById('loginForm');
+            const verifyForm = document.getElementById('verifyForm');
+            
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                verifyForm.classList.add('hidden');
+            } else {
+                loginForm.classList.add('hidden');
+                verifyForm.classList.remove('hidden');
+            }
+            
+            hideResult();
+        }
+
+        function showResult(message, isError = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.className = `result ${isError ? 'error' : 'success'}`;
+            resultDiv.innerHTML = message;
+            
+            // Scroll to result
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function hideResult() {
+            document.getElementById('result').classList.add('hidden');
+        }
+
+        function setLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            const originalText = buttonId === 'loginBtn' ? 
+                '<i class="fas fa-sign-in-alt"></i> Masuk' : 
+                '<i class="fas fa-check-circle"></i> Verifikasi Token';
+            
+            if (isLoading) {
+                button.innerHTML = '<span class="loading"></span>Memproses...';
+                button.disabled = true;
+            } else {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        async function login() {
+            hideResult();
+            setLoading('loginBtn', true);
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!username || !password) {
+                showResult('<h3><i class="fas fa-exclamation-triangle"></i> Data Tidak Lengkap</h3><p>Harap isi User ID dan Password dengan lengkap.</p>', true);
+                setLoading('loginBtn', false);
+                return;
+            }
+
+            const data = { username, password };
+
+            try {
+                const response = await fetch('http://localhost:5002/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    const token = result.data.token;
+                    document.getElementById('token').value = token;
+                    
+                    showResult(`
+                        <h3><i class="fas fa-check-circle"></i> Login Berhasil!</h3>
+                        <p>Selamat datang kembali! Token autentikasi Anda telah dibuat.</p>
+                        <div class="token-container">
+                            <textarea id="displayedToken" readonly>${token}</textarea>
+                        </div>
+                        <button onclick="copyToken()" class="btn-primary btn-secondary">
+                            <i class="fas fa-copy"></i> Salin Token
+                        </button>
+                        <p style="margin-top: 15px; color: #2e7d32; font-size: 0.875rem; font-weight: 500;">
+                            <i class="fas fa-info-circle"></i> Token telah otomatis disalin ke tab verifikasi.
+                        </p>
+                    `);
+                } else {
+                    showResult(`<h3><i class="fas fa-times-circle"></i> Login Gagal</h3><p>${result.message}</p>`, true);
+                }
+            } catch (error) {
+                showResult(`<h3><i class="fas fa-exclamation-triangle"></i> Kesalahan Koneksi</h3><p>Tidak dapat terhubung ke server: ${error.message}</p>`, true);
+            } finally {
+                setLoading('loginBtn', false);
+            }
+        }
+
+        function copyToken() {
+            const token = document.getElementById('token').value;
+            navigator.clipboard.writeText(token).then(() => {
+                const copyBtn = document.querySelector('.btn-secondary');
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+                copyBtn.style.background = '#4CAF50';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.style.background = '#9c27b0';
+                }, 2000);
+            }).catch(err => {
+                showResult(`<h3><i class="fas fa-exclamation-triangle"></i> Gagal Menyalin</h3><p>Tidak dapat menyalin token: ${err.message}</p>`, true);
+            });
+        }
+
+        async function verifyToken() {
+            hideResult();
+            setLoading('verifyBtn', true);
+            
+            const token = document.getElementById('token').value.trim();
+            
+            if (!token) {
+                showResult('<h3><i class="fas fa-exclamation-triangle"></i> Token Diperlukan</h3><p>Harap masukkan JWT Token untuk diverifikasi.</p>', true);
+                setLoading('verifyBtn', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5002/auth/verify', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.message || 'Verifikasi gagal');
+                }
+                
+                if (result.status === 'success') {
+                    showResult(`
+                        <h3><i class="fas fa-check-circle"></i> Token Valid!</h3>
+                        <div style="background: rgba(255,255,255,0.9); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <p><strong><i class="fas fa-id-badge"></i> User ID:</strong> ${result.data.user_id}</p>
+                            <p><strong><i class="fas fa-user"></i> Username:</strong> ${result.data.username}</p>
+                        </div>
+                        <p style="margin-top: 1rem; color: #2e7d32; font-size: 0.875rem;">
+                            <i class="fas fa-shield-alt"></i> Token ini valid dan dapat digunakan untuk permintaan yang terautentikasi.
+                        </p>
+                    `);
+                } else {
+                    showResult(`<h3><i class="fas fa-times-circle"></i> Token Tidak Valid</h3><p>${result.message}</p>`, true);
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showResult(`<h3><i class="fas fa-exclamation-triangle"></i> Verifikasi Gagal</h3><p>${error.message}</p>`, true);
+            } finally {
+                setLoading('verifyBtn', false);
+            }
+        }
+
+        // Add Enter key support for forms
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('password').focus();
+                }
+            });
+            
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+            
+            document.getElementById('token').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyToken();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

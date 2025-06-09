@@ -1,0 +1,8 @@
+# requirements.txt
+Flask
+Flask-Cors
+PyJWT
+requests
+PyMySQL
+gunicorn
+cryptography

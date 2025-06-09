@@ -1,0 +1,108 @@
+# docker-compose.yml - Versi Final dengan Perbaikan dan phpMyAdmin
+
+services:
+  # Service untuk Database MySQL
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: unless-stopped
+    environment:
+      # Mengambil password dari file .env untuk keamanan
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: iae_user_service
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    # Healthcheck untuk memastikan database benar-benar siap sebelum layanan lain dimulai
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # User Service (Port 5001)
+  user-service:
+    build: ./user-service
+    container_name: user_service_app
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    depends_on:
+      db:
+        condition: service_healthy # Menunggu sampai DB sehat
+
+  # Auth Service (Port 5002)
+  auth-service:
+    build: ./auth-service
+    container_name: auth_service_app
+    restart: unless-stopped
+    ports:
+      - "5002:5002"
+    # KOREKSI: Auth Service bergantung pada user-service, bukan langsung ke DB
+    depends_on:
+      - user-service
+
+  # Transaction Service (Port 5003)
+  transaction-service:
+    build: ./transaction-service
+    container_name: transaction_service_app
+    restart: unless-stopped
+    ports:
+      - "5003:5003"
+    # KOREKSI: Menambahkan kembali dependensi ke auth-service dan user-service
+    depends_on:
+      db:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      user-service:
+        condition: service_started
+
+  # Payment Service (Port 5004)
+  payment-service:
+    build: ./payment-service
+    container_name: payment_service_app
+    restart: unless-stopped
+    ports:
+      - "5004:5004"
+    # KOREKSI: Menambahkan kembali dependensi ke transaction-service dan reward-service
+    depends_on:
+      db:
+        condition: service_healthy
+      transaction-service:
+        condition: service_started
+      reward-service:
+        condition: service_started
+
+  # Reward Service (Port 5005)
+  reward-service:
+    build: ./reward-service
+    container_name: reward_service_app
+    restart: unless-stopped
+    ports:
+      - "5005:5005"
+    # KOREKSI: Menambahkan kembali dependensi ke auth-service
+    depends_on:
+      db:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+  
+  # BARU: Service untuk phpMyAdmin (Port 8081)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma_app
+    restart: unless-stopped
+    ports:
+      - "8081:80"  # Akses dari browser di http://localhost:8081
+    environment:
+      PMA_HOST: db        # Menunjuk ke service 'db'
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # Mengambil password dari file .env
+    depends_on:
+      db:
+        condition: service_healthy # Menunggu sampai database siap
+
+volumes:
+  mysql_data:

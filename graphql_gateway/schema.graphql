@@ -1,0 +1,90 @@
+# Schema (SDL - Schema Definition Language) untuk Seluruh Layanan BankIn
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+type User {
+  id: ID!
+  username: String!
+  balance: Float!
+  payments: [Payment!]
+  transactions: [Transaction!]
+  rewards: UserReward
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type Transaction {
+  id: ID!
+  amount: Float!
+  type: TransactionType!
+  description: String
+  timestamp: String!
+}
+
+type Payment {
+  id: ID!
+  bookingId: Int!
+  amount: Float!
+  status: PaymentStatus!
+  paymentCode: String!
+  timestamp: String!
+  transaction: Transaction
+}
+
+type UserReward {
+  userId: ID!
+  points: Int!
+  history: [PointTransaction!]
+}
+
+type PointTransaction {
+  id: ID!
+  points: Int!
+  type: String!
+  createdAt: String!
+}
+
+type RewardItem {
+  id: ID!
+  name: String!
+  description: String
+  pointsCost: Int!
+}
+
+type RedemptionCode {
+  code: String!
+  rewardName: String!
+  discountAmount: Float
+  status: String!
+  expiresAt: String
+}
+
+type Query {
+  me: User
+  user(id: ID!): User
+  myPayments: [Payment!]
+  myTransactions: [Transaction!]
+  availableRewardItems: [RewardItem!]
+  myRedeemedCodes: [RedemptionCode!]
+}
+
+type Mutation {
+  login(username: String!, password: String!): AuthPayload!
+  createUser(username: String!, password: String!, initialBalance: Float = 0): User!
+  createPayment(bookingId: Int!, userId: Int!, amount: Float!, customerName: String!, ticketId: Int!, bookedSeatIds: [Int!]): Payment!
+  createTransaction(amount: Float!, type: TransactionType!): Transaction!
+  redeemPointsForDiscount(points: Int!): RedemptionCode!
+  redeemRewardItem(itemId: ID!): RedemptionCode!
+}

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankIn - Reward Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5d3587;
+            --primary-dark: #4d2b70;
+            --secondary-color: #a367b1;
+            --accent-color: #ffd1e3;
+            --error-color: #f44336;
+            --success-color: #4CAF50;
+            --warning-color: #ff9800;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --gradient-bg: linear-gradient(135deg, #ffd1e3 0%, #a367b1 100%);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; background: var(--gradient-bg); min-height: 100vh; display: flex; flex-direction: column; padding: 0; margin: 0; align-items: center;}
+        .header { background: var(--card-bg); backdrop-filter: blur(10px); padding: 1.5rem 0; box-shadow: 0 2px 20px var(--shadow-color); position: sticky; top: 0; z-index: 1000; animation: slideDown 0.6s ease-out; width:100%; max-width:1200px; margin: 2rem 0; border-radius:15px;}
+        @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; }
+        .brand-logo { display: flex; align-items: center; gap: 1rem; }
+        .brand-logo i { font-size: 2.5rem; color: var(--primary-color); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .brand-name { font-size: 2rem; font-weight: bold; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;}
+        .brand-tagline { font-size: 0.9rem; color: #666; margin-top: -5px; }
+        .header-stats { display: flex; gap: 2rem; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 1.4rem; font-weight: bold; color: var(--primary-color); }
+        .stat-label { font-size: 0.8rem; color: #666; }
+        .main-container { max-width: 1200px; width: 100%; margin: 0 auto; padding: 0 2rem 2rem; flex: 1; }
+        .container { background: var(--card-bg); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px var(--shadow-color); animation: fadeInUp 0.6s ease-out; }
+        @keyframes fadeInUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .tabs { display: flex; margin-bottom: 2rem; background: #f8f9fa; border-radius: 15px; padding: 0.5rem; gap: 0.5rem; flex-wrap: wrap; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); }
+        .tab { flex: 1; padding: 1rem 1.5rem; cursor: pointer; transition: all 0.3s; border-radius: 12px; text-align: center; font-weight: 500; min-width: 120px; color: #666; position: relative; overflow: hidden; }
+        .tab.active { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(93, 53, 135, 0.3); }
+        .tab:hover:not(.active) { background: rgba(93, 53, 135, 0.1); transform: translateY(-1px); }
+        .tab-content { padding: 1rem 0; display: none; }
+        .tab-content.active { display: block; }
+        .points-card { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 2.5rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; box-shadow: 0 10px 30px rgba(93, 53, 135, 0.3); }
+        .points-amount { font-size: 3.5rem; font-weight: bold; margin: 1rem 0; }
+        .points-label { font-size: 1.2rem; opacity: 0.9; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; color: var(--primary-color); font-weight: 600; }
+        input { width: 100%; padding: 1.2rem; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem; transition: all 0.3s ease; background: white; }
+        input:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 3px rgba(93, 53, 135, 0.2); }
+        button { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; padding: 1.2rem 2rem; border-radius: 12px; cursor: pointer; font-weight: bold; transition: all 0.3s; width: 100%; font-size: 1rem; }
+        .message { padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; display: none; border-left: 4px solid; }
+        .message.success { background: linear-gradient(135deg, #e8f5e9, #f1f8e9); border-left-color: var(--success-color); color: #2e7d32; }
+        .message.error { background: linear-gradient(135deg, #ffebee, #fce4ec); border-left-color: var(--error-color); color: #c62828; }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; vertical-align: middle; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .feature-card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; }
+        .transaction-list { margin-top: 2rem; }
+        .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #eee; }
+        .reward-items-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .reward-item-card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; }
+        .redeemed-codes-list { margin-top: 2rem; }
+        .redeemed-code-item { background: white; border-radius: 15px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid #eee; }
+        .status { font-weight: bold; padding: 0.3rem 0.8rem; border-radius: 20px; }
+        .status.used { background: #ffebee; color: var(--error-color); }
+        .status.active { background: #e8f5e9; color: var(--success-color); }
+        .status.expired { background: #fff3e0; color: var(--warning-color); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="brand-logo">
+                <i class="fas fa-university"></i>
+                <div>
+                    <div class="brand-name">BankIn</div>
+                    <div class="brand-tagline">Solusi Pembayaran Modern untuk Perjalanan Anda</div>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Transaksi</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Pengguna Aktif</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('points', this)"><i class="fas fa-coins"></i> Point Saya</div>
+                <div class="tab" onclick="switchTab('redeem', this)"><i class="fas fa-exchange-alt"></i> Tukar Point</div>
+                <div class="tab" onclick="switchTab('redeem_item', this)"><i class="fas fa-gift"></i> Tukar Reward</div>
+                <div class="tab" onclick="switchTab('history', this)"><i class="fas fa-history"></i> Riwayat</div>
+                <div class="tab" onclick="switchTab('redeemed_codes_history', this)"><i class="fas fa-ticket-alt"></i> Kode Saya</div>
+            </div>
+
+            <div id="result-message" class="message"></div>
+
+            <div id="points-tab" class="tab-content active">
+                <div class="points-card">
+                    <div class="points-label">Total Point Anda</div>
+                    <div class="points-amount" id="total-points">0</div>
+                </div>
+                <div class="form-group">
+                    <label for="userIdPoints"><i class="fas fa-user"></i> User ID</label>
+                    <input type="number" id="userIdPoints" placeholder="Masukkan User ID">
+                </div>
+                <div class="form-group">
+                    <label for="tokenPoints"><i class="fas fa-lock"></i> Token Auth</label>
+                    <input type="password" id="tokenPoints" placeholder="Masukkan token autentikasi">
+                </div>
+                <button onclick="loadUserPoints()" id="loadPointsBtn"><span id="loadPointsBtnText">Muat Poin</span></button>
+            </div>
+
+            <div id="redeem-tab" class="tab-content">
+                <div class="redeem-form">
+                     <div class="feature-card" style="margin-bottom: 2rem;">
+                        <h3><i class="fas fa-percentage"></i> Tukar Point Jadi Diskon</h3>
+                        <p>Setiap 10 poin bisa ditukar dengan diskon Rp 5.000</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="redeem-points"><i class="fas fa-coins"></i> Jumlah Point</label>
+                        <input type="number" id="redeem-points" placeholder="Masukkan jumlah point (kelipatan 10)">
+                    </div>
+                    <div class="form-group">
+                        <label for="userIdRedeem"><i class="fas fa-user"></i> User ID</label>
+                        <input type="number" id="userIdRedeem" placeholder="Masukkan User ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="tokenRedeem"><i class="fas fa-lock"></i> Token Auth</label>
+                        <input type="password" id="tokenRedeem" placeholder="Masukkan token autentikasi">
+                    </div>
+                    <button onclick="redeemPoints()" id="redeemBtn"><span id="redeemBtnText">Tukar Point</span></button>
+                </div>
+            </div>
+
+            <div id="redeem_item-tab" class="tab-content">
+                 <h2><i class="fas fa-gift"></i> Pilih Reward untuk Ditukar</h2>
+                <div class="form-group">
+                    <label for="userIdRewardItem"><i class="fas fa-user"></i> User ID</label>
+                    <input type="number" id="userIdRewardItem" placeholder="Masukkan User ID">
+                </div>
+                <div class="form-group">
+                    <label for="tokenRewardItem"><i class="fas fa-lock"></i> Token Auth</label>
+                    <input type="password" id="tokenRewardItem" placeholder="Masukkan token autentikasi">
+                </div>
+                <button onclick="loadRewardItems()" id="loadRewardItemsBtn"><span id="loadRewardItemsBtnText">Muat Daftar Reward</span></button>
+                <div class="reward-items-grid" id="reward-items-list"></div>
+            </div>
+
+            <div id="history-tab" class="tab-content">
+                <h2><i class="fas fa-history"></i> Riwayat Transaksi Poin</h2>
+                <div class="form-group">
+                    <label for="userIdHistory"><i class="fas fa-user"></i> User ID</label>
+                    <input type="number" id="userIdHistory" placeholder="Masukkan User ID">
+                </div>
+                <div class="form-group">
+                    <label for="tokenHistory"><i class="fas fa-lock"></i> Token Auth</label>
+                    <input type="password" id="tokenHistory" placeholder="Masukkan token autentikasi">
+                </div>
+                <button onclick="loadTransactionHistory()" id="loadHistoryBtn"><span id="loadHistoryBtnText">Muat Riwayat</span></button>
+                <div class="transaction-list" id="transaction-history"></div>
+            </div>
+
+            <div id="redeemed_codes_history-tab" class="tab-content">
+                 <h2><i class="fas fa-ticket-alt"></i> Riwayat Kode Penukaran Anda</h2>
+                <div class="form-group">
+                    <label for="userIdRedeemedCodes"><i class="fas fa-user"></i> User ID</label>
+                    <input type="number" id="userIdRedeemedCodes" placeholder="Masukkan User ID">
+                </div>
+                <div class="form-group">
+                    <label for="tokenRedeemedCodes"><i class="fas fa-lock"></i> Token Auth</label>
+                    <input type="password" id="tokenRedeemedCodes" placeholder="Masukkan token autentikasi">
+                </div>
+                <button onclick="loadRedeemedCodesHistory()" id="loadRedeemedCodesBtn"><span id="loadRedeemedCodesBtnText">Muat Kode Penukaran</span></button>
+                <div class="redeemed-codes-list" id="redeemed-codes-history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5005';
+
+        // --- Helper Functions ---
+        function showMessage(message, isError = false) {
+            const resultDiv = document.getElementById('result-message');
+            resultDiv.className = `message ${isError ? 'error' : 'success'}`;
+            resultDiv.innerHTML = `<h3>${isError ? '❌' : '✅'} ${isError ? 'Error' : 'Sukses'}</h3><div>${message}</div>`;
+            resultDiv.style.display = 'block';
+        }
+
+        function clearMessage() {
+            document.getElementById('result-message').style.display = 'none';
+        }
+
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            const textSpan = document.getElementById(buttonId + 'Text');
+            if (!button || !textSpan) return;
+
+            if (isLoading) {
+                button.disabled = true;
+                textSpan.innerHTML = '<span class="loading"></span> Processing...';
+            } else {
+                button.disabled = false;
+                const originalTexts = {
+                    loadPointsBtn: 'Muat Poin',
+                    redeemBtn: 'Tukar Point',
+                    loadHistoryBtn: 'Muat Riwayat',
+                    loadRewardItemsBtn: 'Muat Daftar Reward',
+                    loadRedeemedCodesBtn: 'Muat Kode Penukaran'
+                };
+                textSpan.innerHTML = originalTexts[buttonId];
+            }
+        }
+
+        // --- Tab and Data Management ---
+        function switchTab(tabName, element) {
+            clearMessage();
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            element.classList.add('active');
+
+            const storedUserId = localStorage.getItem('userId');
+            const storedToken = localStorage.getItem('token');
+            const capitalTabName = tabName.charAt(0).toUpperCase() + tabName.slice(1).replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+
+            if (storedUserId) document.getElementById(`userId${capitalTabName}`).value = storedUserId;
+            if (storedToken) document.getElementById(`token${capitalTabName}`).value = storedToken;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedToken = localStorage.getItem('token');
+            const storedUserId = localStorage.getItem('userId');
+            if (storedUserId && storedToken) {
+                document.getElementById('userIdPoints').value = storedUserId;
+                document.getElementById('tokenPoints').value = storedToken;
+                loadUserPoints();
+            }
+        });
+
+        // --- Generic API Caller ---
+        async function fetchAPI(endpoint, options = {}) {
+            if (options.buttonId) setButtonLoading(options.buttonId, true);
+            try {
+                const response = await fetch(API_BASE_URL + endpoint, options);
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP Error ${response.status}`);
+                }
+                return data;
+            } catch (error) {
+                console.error(`API Error on ${endpoint}:`, error);
+                showMessage(error.message, true);
+                return null;
+            } finally {
+                if (options.buttonId) setButtonLoading(options.buttonId, false);
+            }
+        }
+
+        // --- Functions for Each Button ---
+        async function loadUserPoints() {
+            const userId = document.getElementById('userIdPoints').value;
+            const token = document.getElementById('tokenPoints').value;
+            if (!userId || !token) return showMessage('User ID dan Token harus diisi.', true);
+
+            const data = await fetchAPI(`/rewards/points/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+                buttonId: 'loadPointsBtn'
+            });
+
+            if (data) {
+                document.getElementById('total-points').textContent = data.points;
+                localStorage.setItem('userId', userId);
+                localStorage.setItem('token', token);
+            }
+        }
+
+        async function redeemPoints() {
+            const points = document.getElementById('redeem-points').value;
+            const userId = document.getElementById('userIdRedeem').value;
+            const token = document.getElementById('tokenRedeem').value;
+
+            if (!points || !userId || !token) return showMessage('Semua field harus diisi.', true);
+            if (parseInt(points) % 10 !== 0) return showMessage('Poin hanya bisa ditukar dalam kelipatan 10.', true);
+
+            const data = await fetchAPI(`/rewards/redeem`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ user_id: parseInt(userId), points: parseInt(points) }),
+                buttonId: 'redeemBtn'
+            });
+
+            if (data) {
+                const successMessage = `Berhasil menukar <strong>${data.points_redeemed} poin</strong>. <br>Anda mendapatkan voucher diskon senilai <strong>Rp ${data.discount_amount.toLocaleString('id-ID')}</strong>. <br>Kode Voucher: <strong>${data.discount_code}</strong> <br>Sisa poin Anda: <strong>${data.remaining_points}</strong>.`;
+                showMessage(successMessage);
+                document.getElementById('redeem-points').value = '';
+                document.getElementById('total-points').textContent = data.remaining_points;
+            }
+        }
+
+        async function loadTransactionHistory() {
+            const userId = document.getElementById('userIdHistory').value;
+            const token = document.getElementById('tokenHistory').value;
+            if (!userId || !token) return showMessage('User ID dan Token harus diisi.', true);
+
+            const data = await fetchAPI(`/rewards/points/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+                buttonId: 'loadHistoryBtn'
+            });
+
+            if (data) {
+                const container = document.getElementById('transaction-history');
+                if (data.point_transactions.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">Tidak ada riwayat transaksi poin.</p>';
+                    return;
+                }
+                container.innerHTML = data.point_transactions.map(t => `
+                    <div class="transaction-item">
+                        <div>
+                            <div style="font-weight:bold; color:${t.points > 0 ? 'var(--success-color)' : 'var(--error-color)'}">${t.points > 0 ? '+' : ''}${t.points} points</div>
+                            <div style="font-size:0.8rem; color:#777;">${new Date(t.created_at).toLocaleString('id-ID')}</div>
+                        </div>
+                        <div style="font-weight:bold;">${t.transaction_type.replace('_', ' ')}</div>
+                    </div>`).join('');
+            }
+        }
+
+        async function loadRewardItems() {
+            const userId = document.getElementById('userIdRewardItem').value;
+            const token = document.getElementById('tokenRewardItem').value;
+            if (!userId || !token) return showMessage('User ID dan Token harus diisi untuk melihat daftar reward.', true);
+
+            const items = await fetchAPI(`/rewards/items`, { buttonId: 'loadRewardItemsBtn' });
+            if (items) {
+                const container = document.getElementById('reward-items-list');
+                if (items.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">Tidak ada reward item yang tersedia.</p>';
+                    return;
+                }
+                container.innerHTML = items.map(item => `
+                    <div class="reward-item-card">
+                        <h3>${item.name}</h3><p>${item.description}</p>
+                        <div>
+                            <div class="points-cost">${item.points_cost} Poin</div>
+                            <button onclick="redeemRewardItem(${item.id}, this)">Tukar Sekarang</button>
+                        </div>
+                    </div>`).join('');
+            }
+        }
+
+        async function redeemRewardItem(rewardItemId, element) {
+            const userId = document.getElementById('userIdRewardItem').value;
+            const token = document.getElementById('tokenRewardItem').value;
+            const originalButtonText = element.innerHTML;
+            element.innerHTML = '<span class="loading"></span>';
+            element.disabled = true;
+
+            const data = await fetchAPI(`/rewards/redeem_item`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ user_id: parseInt(userId), reward_item_id: rewardItemId })
+            });
+
+            element.innerHTML = originalButtonText;
+            element.disabled = false;
+
+            if (data) {
+                showMessage(`Berhasil menukar <strong>${data.reward_name}</strong>! <br>Kode penukaran Anda: <strong>${data.redemption_code}</strong>. <br>Sisa poin: ${data.remaining_points}.`);
+                document.getElementById('total-points').textContent = data.remaining_points;
+            }
+        }
+
+        async function loadRedeemedCodesHistory() {
+            const userId = document.getElementById('userIdRedeemedCodes').value;
+            const token = document.getElementById('tokenRedeemedCodes').value;
+            if (!userId || !token) return showMessage('User ID dan Token harus diisi.', true);
+
+            const codes = await fetchAPI(`/rewards/redeemed_codes/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+                buttonId: 'loadRedeemedCodesBtn'
+            });
+
+            if (codes) {
+                const container = document.getElementById('redeemed-codes-history-list');
+                if (codes.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">Tidak ada riwayat kode penukaran.</p>';
+                    return;
+                }
+                container.innerHTML = codes.map(code => {
+                    let statusText = 'Aktif';
+                    let statusClass = 'active';
+                    const expiresAt = code.expires_at ? new Date(code.expires_at) : null;
+                    if (code.is_used) { statusText = 'Telah Digunakan'; statusClass = 'used'; }
+                    else if (expiresAt && new Date() > expiresAt) { statusText = 'Kadaluarsa'; statusClass = 'expired'; }
+                    
+                    return `<div class="redeemed-code-item">
+                            <h4>${code.reward_name}</h4>
+                            <p>Kode: <strong style="font-family:monospace;">${code.code}</strong></p>
+                            <p>Didapat: ${new Date(code.generated_at).toLocaleString('id-ID')}</p>
+                            ${expiresAt ? `<p>Kadaluarsa: ${new Date(expiresAt).toLocaleString('id-ID')}</p>` : ''}
+                            <p>Status: <span class="status ${statusClass}">${statusText}</span></p>
+                        </div>`;
+                }).join('');
+            }
+        }
+    </script>
+</body>
+</html>
